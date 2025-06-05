@@ -1,0 +1,245 @@
+<script type="text/javascript">
+        var gk_isXlsx = false;
+        var gk_xlsxFileLookup = {};
+        var gk_fileData = {};
+        function filledCell(cell) {
+          return cell !== '' && cell != null;
+        }
+        function loadFileData(filename) {
+        if (gk_isXlsx && gk_xlsxFileLookup[filename]) {
+            try {
+                var workbook = XLSX.read(gk_fileData[filename], { type: 'base64' });
+                var firstSheetName = workbook.SheetNames[0];
+                var worksheet = workbook.Sheets[firstSheetName];
+
+                // Convert sheet to JSON to filter blank rows
+                var jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1, blankrows: false, defval: '' });
+                // Filter out blank rows (rows where all cells are empty, null, or undefined)
+                var filteredData = jsonData.filter(row => row.some(filledCell));
+
+                // Heuristic to find the header row by ignoring rows with fewer filled cells than the next row
+                var headerRowIndex = filteredData.findIndex((row, index) =>
+                  row.filter(filledCell).length >= filteredData[index + 1]?.filter(filledCell).length
+                );
+                // Fallback
+                if (headerRowIndex === -1 || headerRowIndex > 25) {
+                  headerRowIndex = 0;
+                }
+
+                // Convert filtered JSON back to CSV
+                var csv = XLSX.utils.aoa_to_sheet(filteredData.slice(headerRowIndex)); // Create a new sheet from filtered array of arrays
+                csv = XLSX.utils.sheet_to_csv(csv, { header: 1 });
+                return csv;
+            } catch (e) {
+                console.error(e);
+                return "";
+            }
+        }
+        return gk_fileData[filename] || "";
+        }
+        </script>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GPE: Peru & Germany - SDG 3.9</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <header>
+        <div class="header-top">
+            <div class="container">
+                <img src="sdg_logo.png" alt="Sustainable Development Goals">
+                <h3><strong>SDG 3: Good health and well-being</strong> - Target 3.9: Ensure healthy lives and promote well-being for all at all ages.</h3>
+            </div>
+        </div>
+        <div class="header-middle">
+            <div class="container">
+                <h1>Healthy Environment for a Healthier Tomorrow</h1>
+                <p>Your daily environment affects your health more than you think. But are you equipped to recognize the risks?</p>
+            </div>
+        </div>
+        <div class="header-bottom">
+            <div class="container">
+                <p>
+                    In Peru and Germany, communities face very different health challenges, but both share a common goal:
+                    building a future where everyone has the right to clean air, safe water, and strong public health systems.
+                    That’s why we created an interactive word search that turns key concepts into a fun learning experience, bringing awareness through play.
+                    <br><br>
+                    <strong>Let’s empower communities in Peru and Germany to take action for healthier lives and a more sustainable planet!</strong>
+                </p>
+            </div>
+        </div>
+    </header>
+
+    <main>
+        <div class="container">
+            <section id="game-section">
+                <h2>Word Search Challenge: Clean Water, Air & Health</h2>
+                <p>Find the following ten words in the grid: <strong>SANITATION, SEWAGE, INFRASTRUCTURE, POLLUTION, ENVIRONMENT, PARTICULATE, CHEMICAL, SUSTAINABLE, REGULATION, EMISSION</strong>. Once you find a word, its fun fact will appear below.</p>
+                <div id="word-search-container">
+                    <div id="word-search-grid"></div>
+                </div>
+                <div id="word-list">
+                    <h4>Words You Have Found</h4>
+                    <ul>
+                        <li data-word="SANITATION">
+                            <div class="fact">
+				                <p><strong><span class="keyword">Sanitation</span></strong></p>
+                                <strong>Definition:</strong>
+                                <p>Refers to the systems and practices for safely managing human waste, garbage, and wastewater to protect public health and the environment.</p>
+                                <strong>Example:</strong>
+                                <ul>
+                                    <li><em>In Peru, limited access to sanitation services in rural areas contributes to chronic child malnutrition and disease transmission, especially where sewage systems are absent and clean water is scarce.</em></li>
+                                    <li><em>Germany maintains high sanitation standards, but during flooding events, infrastructure failures can temporarily compromise sanitation systems, highlighting the need for climate-resilient public health infrastructure.</em></li>
+                                </ul>
+                            </div>
+                        </li>
+                        <li data-word="SEWAGE">
+                            <div class="fact">
+                                <p><strong><span class="keyword">Sewage</span></strong></p>
+                                <strong>Definition:</strong>
+                                <p>Is the wastewater and excrement conveyed in sewers, typically from households and industries, which needs to be treated to prevent environmental contamination.</p>
+                                <strong>Example:</strong>
+                                <ul>
+                                    <li><em>In Lima, Peru, over 6 million people lack sewage services, increasing the risk of disease and water contamination, especially in densely populated and marginalized urban zones.</em></li>
+                                    <li><em>Germany has advanced sewage treatment plants, yet some rivers still suffer from residual pollutants due to overflow events and agricultural runoff affecting water quality downstream.</em></li>
+                                </ul>
+                            </div>
+                        </li>
+                        <li data-word="INFRASTRUCTURE">
+                            <div class="fact">
+                                <p><strong><span class="keyword">Infrastructure</span></strong></p>
+                                <strong>Definition:</strong>
+                                <p>Includes the basic physical and organizational structures (like roads, water systems, and sewage networks) necessary for the operation of a society or enterprise.</p>
+                                <strong>Example:</strong>
+                                <ul>
+                                    <li><em>The Emergency Water Project in San Juan de Lurigancho, Peru, illustrates how new infrastructure like water kiosks can quickly improve access to potable water in underserved communities.</em></li>
+                                    <li><em>Germany invests heavily in maintaining its infrastructure, such as digitizing its water supply systems to handle increasing stress from climate-induced floods and droughts.</em></li>
+                                </ul>
+                            </div>
+                        </li>
+                        <li data-word="POLLUTION">
+                            <div class="fact">
+                                <p><strong><span class="keyword">Pollution</span></strong></p>
+                                <strong>Definition:</strong>
+                                <p>Is the introduction of harmful substances or products into the environment, causing adverse effects to human health, ecosystems, and biodiversity.</p>
+                                <strong>Example:</strong>
+                                <ul>
+                                    <li><em>Illegal mining and oil spills in the Amazon region of Peru continue to pollute rivers and soils, leaving entire communities without safe access to water or healthy living conditions.</em></li>
+                                    <li><em>Despite regulations, German rivers still face pollution from industrial waste and agricultural chemicals, with over 90% of water bodies not meeting good ecological standards.</em></li>
+                                </ul>
+                            </div>
+                        </li>
+                        <li data-word="ENVIRONMENT">
+                            <div class="fact">
+                                <p><strong><span class="keyword">Environment</span></strong></p>
+                                <strong>Definition:</strong>
+                                <p>The environment encompasses all external conditions, including natural, physical, chemical, and biological factors, that affect living organisms and human activity.</p>
+                                <strong>Example:</strong>
+                                <ul>
+                                    <li><em>Environmental degradation in Peru, caused by overexploitation of natural resources, is closely linked to the rise in vector-borne diseases and the displacement of vulnerable populations.</em></li>
+                                    <li><em>Germany’s environmental policies promote biodiversity and renewable energy, but conflicts arise between ecological preservation and industrial development, especially in river basin management.</em></li>
+                                </ul>
+                            </div>
+                        </li>
+                        <li data-word="PARTICULATE">
+                            <div class="fact">
+                                <p><strong><span class="keyword">Particulate</span></strong></p>
+                                <strong>Definition:</strong>
+                                <p>Refers to tiny solid or liquid particles suspended in the air, such as dust, dirt, soot, or smoke, which can be hazardous when inhaled.</p>
+                                <strong>Example:</strong>
+                                <ul>
+                                    <li><em>In Lima, high levels of PM2.5 particulates, caused by old vehicles and poor urban planning, are linked to respiratory and cardiovascular illnesses among residents.</em></li>
+                                    <li><em>German cities have implemented low-emission zones to control particulate pollution, but during winter, levels often rise due to increased heating and reduced air circulation.</em></li>
+                                </ul>
+                            </div>
+                        </li>
+                        <li data-word="CHEMICAL">
+                            <div class="fact">
+                                <p><strong><span class="keyword">Chemical</span></strong></p>
+                                <strong>Definition:</strong>
+                                <p>Is any substance with a distinct molecular composition that is produced by or used in a chemical process, some of which can be hazardous to health or the environment.</p>
+                                <strong>Example:</strong>
+                                <ul>
+                                    <li><em>In Peru, inadequate control of pesticides and industrial chemicals poses health risks, particularly in agricultural communities near extractive industries.</em></li>
+                                    <li><em>Germany enforces the EU’s REACH regulation to control chemical substances, improving product safety across industries from cosmetics to electronics through strict monitoring and reporting.</em></li>
+                                </ul>
+                            </div>
+                        </li>
+                        <li data-word="SUSTAINABLE">
+                            <div class="fact">
+                                <p><strong><span class="keyword">Sustainable</span></strong></p>
+                                <strong>Definition:</strong>
+                                <p>Describes practices or systems that meet current needs without compromising the ability of future generations to meet theirs, often by balancing environmental, economic, and social goals.</p>
+                                <strong>Example:</strong>
+                                <ul>
+                                    <li><em>Rijhopool S.A.C. in Peru promotes sustainable waste management by recycling used cooking oil, reducing water contamination and encouraging eco-friendly habits in urban communities.</em></li>
+                                    <li><em>Germany’s renaturalization of the Emscher River demonstrates sustainable environmental policy, combining engineering, biodiversity protection, and public participation for long-term ecosystem recovery.</em></li>
+                                </ul>
+                            </div>
+                        </li>
+                        <li data-word="REGULATION">
+                            <div class="fact">
+                                <p><strong><span class="keyword">Regulation</span></strong></p>
+                                <strong>Definition:</strong>
+                                <p>Is a rule or directive made and maintained by an authority to control or govern behavior, especially concerning health, safety, or the environment.</p>
+                                <strong>Example:</strong>
+                                <ul>
+                                    <li><em>In Peru, Supreme Decree No. 031-2023-SA strengthens regulations for hazardous substances, enhancing DIGESA’s capacity to monitor chemical risks in public and industrial spaces.</em></li>
+                                    <li><em>Germany’s environmental regulations, such as those in the Water Resources Act and REACH framework, ensure high standards for chemical use and pollution control throughout the country.</em></li>
+                                </ul>
+                            </div>
+                        </li>
+                        <li data-word="EMISSION">
+                            <div class="fact">
+                                <p><strong><span class="keyword">Emission</span></strong></p>
+                                <strong>Definition:</strong>
+                                <p>Emission refers to the release of gases, particles, or other substances into the air, water, or soil, typically as a byproduct of industrial or vehicular activity.</p>
+                                <strong>Example:</strong>
+                                <ul>
+                                    <li><em>Vehicular emissions in Lima are a major source of air pollution, contributing to the city’s alarming levels of smog and reduced life expectancy due to chronic health conditions.</em></li>
+                                    <li><em>Germany’s emission control measures include banning high-emission vehicles from urban centers, aiming to reduce greenhouse gases and fine particulate matter in dense city areas.</em></li>
+                                </ul>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+            </section>
+<hr>
+            <section id="resources">
+		<img src="clean city.jpg" alt="environmental resources" class="intro-image">
+                <h2>Learn More About Health and Environmental Justice</h2>
+                <p>Check out these resources to explore the connection between environment and health:</p>
+                <ul>
+                    <li><a href="https://www.ehinz.ac.nz/indicators/overview/what-is-environmental-health/" target="_blank">What is environmental health? - Massey University</a></li>
+                    <li><a href="https://www.worldbank.org/en/olc/course/43750" target="_blank">Introduction to Air Quality Management - World Bank Group</a></li>
+                    <li><a href="https://agora.unicef.org/course/info.php?id=37938" target="_blank">Introducing water, sanitation and hygiene systems strengthening - UNICEF</a></li>
+                    <li><a href="https://www.bmz.de/en/issues/sustainable-urban-development" target="_blank">Sustainable urban development - BMZ</a></li>
+                </ul>
+            </section>
+
+            <section id="call-to-action">
+                <h4>Join the Movement!</h4>
+                <p>Share this page to raise awareness about environmental health, or explore SDG 3 to find out how you can help protect health and wellbeing for all!</p>
+                <button onclick="sharePage()">Share Now</button>
+            </section>
+        </div>
+    </main>
+
+    <div id="popup" class="popup">
+        <div class="popup-content">
+            <p id="popup-text"></p>
+            <button id="continue-btn">Continue</button>
+        </div>
+    </div>
+
+    <footer>
+        <p>Created by <strong>Abel Fernandez</strong>, <strong>Franklin Cary</strong>, <strong>Jana Borish</strong>, and <strong>Lorena Dutt</strong> <br>
+            in support of SDG 3 – Good health and well-being</p>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+</html>
